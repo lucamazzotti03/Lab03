@@ -1,6 +1,6 @@
 class Autonoleggio:
     def __init__(self, nome, responsabile):
-        """Inizializza gli attributi e le strutture dati"""
+        """Inizializza gl i attributi e le strutture dati"""
         # TODO
 
     def carica_file_automobili(self, file_path):

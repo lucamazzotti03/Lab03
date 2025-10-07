@@ -4,7 +4,7 @@ class Autonoleggio:
         # TODO
 
     def carica_file_automobili(self, file_path):
-        """Carica le auto dal file"""
+        """Carica le auto dal  file"""
         # TODO
 
     def aggiungi_automobile(self, marca, modello, anno, num_posti):

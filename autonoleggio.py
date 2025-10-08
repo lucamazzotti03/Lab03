@@ -1,3 +1,5 @@
+from datetime import datetime
+
 class Automobile:
     def __init__(self, codice, marca, modello, anno, nPosti):
         self.codice = codice
@@ -55,65 +57,54 @@ class Autonoleggio:
         # TODO
 
     def nuovo_noleggio(self, data, id_automobile, cognome_cliente):
-        for a in self.automobili:
-            if a.codice == id_automobile:
-                for id_noleggio in self.noleggi:
-                    noleggio = self.noleggi[id_noleggio]
-                    if noleggio["auto"].codice == id_automobile and noleggio["attivo"]:
-                        raise ValueError(f"L'automobile {id_automobile} non è disponibile: già noleggiata")
-                auto_obj = None
-                for i in range(len(self.automobili)):
-                    if self.automobili[i].codice == id_automobile:
-                        auto_obj = self.automobili.pop(i)
-                        break
+                # Controllo se è già noleggiata (scorro i noleggi per le chiavi)
+        for id_n in self.noleggi:
+            noleggio_check = self.noleggi[id_n]
+            if noleggio_check["auto"].codice == id_automobile and noleggio_check["attivo"]:
+                raise ValueError(f"L'automobile {id_automobile} non è disponibile: già noleggiata")
 
-                noleggio = {"data" : data,
-                            "auto" : auto_obj,
-                            "cliente" : cognome_cliente,
-                            "attivo" : True}
+                # Cerco l'auto nelle disponibili e la rimuovo
+        for i in range(len(self.automobili)):
+            if self.automobili[i].codice == id_automobile:
+                auto_obj = self.automobili.pop(i)
+                noleggio = {"data": data, "auto": auto_obj, "cliente": cognome_cliente, "attivo": True}
+                id_noleggio = f"N{len(self.noleggi) + 1}"
+                self.noleggi[id_noleggio] = noleggio
+                return {
+                            "id_noleggio": id_noleggio,
+                            "data": noleggio["data"],
+                            "auto": str(noleggio["auto"]),
+                            "cliente": noleggio["cliente"],
+                            "attivo": noleggio["attivo"]
+                        }
 
-            id_noleggio = f"N{len(self.noleggi)+1}"
-            self.noleggi[id_noleggio] = noleggio
-            return {"id_noleggio": id_noleggio,
-                    "data": noleggio["data"],
-                    "auto": str(noleggio["auto"]),
-                    "cliente": noleggio["cliente"],
-                    "attivo": noleggio["attivo"]
-                                                }
-                
-
-        """Crea un nuovo noleggio"""
-        # TODO
+                # Se non è nelle disponibili e non è noleggiata attivamente, allora non esiste
+        raise ValueError(f"Automobile {id_automobile} non trovata")
 
 
     def termina_noleggio(self, id_noleggio):
-        if not self.noleggio:
+
+        #verifico se c'è
+        if id_noleggio not in self.noleggi:
             raise ValueError(f"Noleggio {id_noleggio} non trovato")
-        if id_noleggio in self.noleggi:
-            noleggio = self.noleggi[id_noleggio]
-            if not noleggio["attivo"]:
-                # rimuovo il record e dico che non esiste
-                del self.noleggi[id_noleggio]
-                raise ValueError(f"Noleggio con ID {id_noleggio} non trovato")
+        noleggio = self.noleggi[id_noleggio]
 
-                # Prendo l'auto dal noleggio e la riaggiungo alle disponibili (se non già presente)
-            auto = noleggio["auto"]
-            trovata = False
-            for a in self.automobili:
-                if a.codice == auto.codice:
-                    trovata = True
-                    break
-            if not trovata:
-                self.automobili.append(auto)
+        if not noleggio["attivo"]:
+            raise ValueError(f"Noleggio {id_noleggio} non attivo")
+        #rimetto l'auto nelle disponibili
+        auto = noleggio["auto"]
+        trovata = False
+        for a in self.automobili:
+            if a.codice == auto.codice:
+                trovata = True
+                break
+        if not trovata:
+            self.automobili.append(auto)
 
-            # Rimuovo il record del noleggio (così una seconda terminazione con lo stesso id darà "non trovato")
-            del self.noleggi[id_noleggio]
+        #rimuovo il noleggio dal record
+        del self.noleggi[id_noleggio]
+        return
 
-            # Esco: il main stamperà "Noleggio ... terminato con successo."
-            return
-
-            # Se l'id non è presente
-        raise ValueError(f"Noleggio con ID {id_noleggio} non trovato")
 
 
 

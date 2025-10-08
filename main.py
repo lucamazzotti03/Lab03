@@ -20,6 +20,8 @@ def main():
 
         if scelta == "1":
             nuovo_responsabile = input("Inserisci il nuovo responsabile: ")
+            autonoleggio.responsabile = nuovo_responsabile
+            #print(autonoleggio.responsabile)
             # TODO: Aggiorna responsabile nel sistema
 
         elif scelta == "2":
